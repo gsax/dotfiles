@@ -1,0 +1,3 @@
+#!/bin/sh
+
+foot --app-id="E-Mail" --title="aerc" aerc

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+foot --app-id="IRC" --title="senpai" senpai

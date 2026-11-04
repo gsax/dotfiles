@@ -8,27 +8,62 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
-set $term_backup foot
+set $term foot
+set $term_backup alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-for_window [app_id="^LAUNCHER$"] floating enable, sticky enable, resize set 300 px 500 px, move position 50 px 50 px, border pixel 1
-for_window [app_id="^WINDOW-SWITCHER$"] floating enable, sticky enable, resize set 1000 px 500 px, border pixel 1
-set $launcher exec alacritty --option=font.size=16.5 --class=LAUNCHER -e /home/gsx/dev/shell/launcher.sh
-set $window-switcher exec alacritty --option=font.size=16.5 --class=WINDOW-SWITCHER -e /home/gsx/dev/shell/window-switcher.sh
+for_window [app_id="^LAUNCHER$"] \
+    floating enable, \
+    sticky enable, \
+    resize set 300 px 500 px, \
+    move position 50 px 50 px, \
+    border pixel 1
+for_window [app_id="^WINDOW-SWITCHER$"] \
+    floating enable, \
+    sticky enable, \
+    resize set 1000 px 500 px, \
+    border pixel 1
+for_window [app_id="^clipse$"] \
+    floating enable, \
+    sticky enable, \
+    resize set 820 px 900 px, \
+    border pixel 1
+set $launcher \
+    exec foot \
+    --font="Debugger:size=20" \
+    --app-id=LAUNCHER \
+    ~/.config/sway/scripts/launcher.sh
+set $window-switcher \
+    exec foot \
+    --font="Debugger:size=20" \
+    --app-id=WINDOW-SWITCHER \
+    ~/.config/sway/scripts/window-switcher.sh
+set $clipse \
+    exec foot \
+    --font="Debugger:size=16" \
+    --app-id=clipse clipse
+set $screenshot_focused_display \
+    exec /dotfiles/sway/scripts/screenshot_focused_display
+set $screenshot_focused_window \
+    exec /dotfiles/sway/scripts/screenshot_focused_window
+set $screenshot_selected_region \
+    exec /dotfiles/sway/scripts/screenshot_selected_region
+set $screenshot_ocr \
+    exec /dotfiles/sway/scripts/screenshot_ocr
 
 # use no borders with mpv
 for_window [app_id="mpv"] border none
 
-# Make all zoom windows floating
-for_window [app_id="^zoom$"] floating enable
+# add a border to the satty window
+for_window [app_id="satty"] border pixel 1
 
 # hide cursor when typing
 seat * hide_cursor when-typing enable
 
 # start xdg-desktop-portal
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec dbus-update-activation-environment \
+    --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # load Xresources
 exec xrdb ~/.Xresources
@@ -37,6 +72,9 @@ exec xrdb ~/.Xresources
 exec swayidle -w \
     timeout 600 'swaymsg "output * dpms off"' \
     resume 'swaymsg "output * dpms on"'
+
+# start clipse clipboard manager
+exec clipse -listen
 
 ### Input configuration
 #
@@ -63,6 +101,15 @@ input "type:keyboard" {
     # Start your window switcher
     bindsym $mod+p exec $window-switcher
 
+    # Take a screenshot
+    bindsym Print exec $screenshot_selected_region
+    bindsym $mod+Print exec $screenshot_focused_display
+    bindsym $mod+Shift+Print exec $screenshot_focused_window
+    bindsym Shift+Print exec $screenshot_ocr
+
+    # open clipboard manager
+    bindsym $mod+v exec $clipse
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
@@ -74,7 +121,9 @@ input "type:keyboard" {
     bindsym $mod+Shift+c reload
 
     # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+e exec swaynag -t warning \
+    -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' \
+    -B 'Yes, exit sway' 'swaymsg exit'
 #
 # Moving around:
 #
@@ -194,7 +243,18 @@ bindsym $mod+grave exec makoctl dismiss
 bindsym $mod+shift+grave exec makoctl restore
 
 # show date and time
-bindsym $mod+d exec notify-send -u normal -i /usr/share/icons/Dracula/symbolic/apps/office-calendar-symbolic.svg "$(date +'%Y-%m-%d')" "$(date +'%H:%M KW%V')"
+bindsym $mod+d \
+    exec notify-send \
+    -u normal \
+    -i /etc/profiles/per-user/gsx/share/icons/Dracula/symbolic/apps/office-calendar-symbolic.svg \
+    "$(date +'%Y-%m-%d')" \
+    "$(date +'%H:%M KW%V')"
+
+# show tailscale status
+bindsym $mod+t \
+    exec notify-send \
+    -u normal \
+    "$(/dotfiles/sway/scripts/tailscale)"
 
 ### Appereance
 #
@@ -220,3 +280,5 @@ blur_radius 1
 default_dim_inactive 0.1
 
 include $XDG_CONFIG_HOME/sway/config.d/*
+include /etc/sway/config.d/*
+

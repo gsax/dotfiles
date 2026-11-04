@@ -283,6 +283,10 @@ filextype {*.sh3d}
         \ {Open in Sweet Home 3D}
         \ sweethome3d %c:p,
 filextype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
+        \ {View in nomacs}
+        \ nomacs %f,
+        \ {View in vimiv}
+        \ vimiv %f,
         \ {View in sxiv}
         \ sxiv %f,
         \ {View in gpicview}
@@ -334,10 +338,10 @@ fileviewer {*.torrent},<application/x-bittorrent>
          \ transmission-show %c
 
 " FuseZipMount
-filetype {*.zip,*.jar,*.war,*.ear,*.oxt,*.apkg},
+filetype {*.zip,*.jar,*.war,*.ear,*.oxt,*.apkg,*.rar},
         \<application/zip,application/java-archive>
-       \ {Mount with fuse-zip}
-       \ FUSE_MOUNT|fuse-zip %SOURCE_FILE %DESTINATION_DIR,
+       \ {Mount with fuse-archive}
+       \ FUSE_MOUNT|fuse-archive -o nocache %SOURCE_FILE %DESTINATION_DIR,
        \ {View contents}
        \ unzip -l %f | less,
        \ {Extract here}
@@ -348,8 +352,8 @@ fileviewer *.zip,*.jar,*.war,*.ear,*.oxt unzip -l %f
 filetype {*.cpio,*.cpio.gz,*.rpm,*.tar,*.tar.bz2,*.tbz2,*.tgz,*.tar.gz,*.tar.xz,
          \*.txz,*.tar.zst,*.tzst},
         \<application/x-cpio,application/x-rpm,application/x-tar>
-       \ {Mount with archivemount}
-       \ FUSE_MOUNT|archivemount %SOURCE_FILE %DESTINATION_DIR,
+       \ {Mount with fuse-archive}
+       \ FUSE_MOUNT|fuse-archive -o nocache %SOURCE_FILE %DESTINATION_DIR,
 fileviewer *.tgz,*.tar.gz tar -tzf %c
 fileviewer *.tar.bz2,*.tbz2 tar -tjf %c
 fileviewer *.tar.xz,*.txz tar -tJf %c
@@ -598,4 +602,4 @@ nnoremap <space> tj
 " https://github.com/cirala/vifm_devicons
 
 " load icon support
-source /usr/share/vifm-devicons/favicons.vifm
+source ~/.config/vifm/devicons/favicons.vifm
