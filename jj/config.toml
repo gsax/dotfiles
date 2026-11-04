@@ -2,7 +2,13 @@
 email = "gsx@protaisn.org"
 name = "Georg Sachs"
 
+[signing]
+behavior = "own"
+backend = "gpg"
+key = "F94EBE10F06321A70109E7C574A62E84A0031125"
+
 [ui]
+show-cryptographic-signatures = true
 pager = "delta"
 diff-formatter = ":git"
 
